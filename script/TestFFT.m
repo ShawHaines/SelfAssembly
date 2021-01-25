@@ -1,8 +1,9 @@
-slices=16384;
+slices=512;
 range=2;
 x=linspace(0,range,slices);
 f=@(x) sin(2*pi*3*x)+0.2*sin(2*pi*10*x);
-y=f(x);
+g=@(x) exp(-100*x.*x);
+y=g(x);
 ky=myFFT(y)/slices;
 kyPrime=fft(y)/slices;
 kx=(0:2^nextpow2(slices)-1)/range;
