@@ -1,16 +1,12 @@
 oldPath=pwd;
 cd(folder+'/'+baseName)
 
-% yu=130; %��ֵ
 FrameSize=25;
-light=1/FrameSize; %ÿ��ͼƬ��������
+light=1/FrameSize;
 
 for i=1:FrameSize
     imageName=i+".jpg";
     I=imread(imageName);
-    
-%     thresh = graythresh(I{i}); 
-%     A= im2bw(I,yu/255);
     A=imbinarize(rgb2gray(I));
     if i==1
         [sizeX,sizeY]=size(A);
