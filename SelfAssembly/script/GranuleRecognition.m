@@ -1,5 +1,5 @@
 function [center]=GranuleRecognition(stats,shuiping,shuzhi)
-    %去掉被重复标记的球
+    % remove those beads that are marked more than 1 time.
     centers = stats.Centroid;
     diameters = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
     radii = diameters/2;

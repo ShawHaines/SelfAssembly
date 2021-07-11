@@ -9,7 +9,7 @@ img=im2bw(img,yuzhi/255);
 figure,imshow(img);
 % [B,L]=bwboundaries(img);
 
-%ȡ���ĺͰ뾶
+%???????
 stats = regionprops('table',img,'Centroid','MajorAxisLength','MinorAxisLength','Image','EquivDiameter');
 centers = stats.Centroid;
 diameters = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
@@ -18,12 +18,12 @@ radii = diameters/2;
 % dr=rad-diameters;
 figure,imshow(img)
 hold on
-D=13;%С��ֱ������ͬ��������������Ҫ�޸ģ�һ����һ��order�ľ���ֲ����������ҵ����ķ�ֵ��λ�þ���С��ֱ����
+D=13;%��?????????????????????????????????????order??????????????????????????��?????��???????
 j2=1;
 [a,b]=size(radii);
-%ȥ�����ظ���ǵ���
+%??????????????
 for i=1:a
-    if (radii(i)<D/2) && radii(i)>0 && ((centers(i,1)-shuiping/2)^2+(centers(i,2)-shuzhi/2)^2)<320^2 %320��Ϊ�����������ڣ��Ǹ���Ҫ�޸ĵĲ���
+    if (radii(i)<D/2) && radii(i)>0 && ((centers(i,1)-shuiping/2)^2+(centers(i,2)-shuzhi/2)^2)<320^2 %320?????????????????????????????
         if j2==1 
            center(j2,1)=centers(i,1);
            center(j2,2)=centers(i,2); 
@@ -46,7 +46,7 @@ for i=1:a
     end
 end
 % viscircles(center,radi);
-plot(center(:,1),center(:,2),'b+','LineWidth',1,'MarkerSize',7);%��ǳ�ÿ����ʶ���������ģ������ж���û�����ظ���ǣ�
+plot(center(:,1),center(:,2),'b+','LineWidth',1,'MarkerSize',7);%??????????????????????????��???????????????
 [a,b]=size(radi);
 % for i=1:b
 %     if radi(i)<1.5

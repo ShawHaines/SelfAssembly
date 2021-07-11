@@ -3,8 +3,8 @@ tic
 
 jpgList=dir(folder+'\\'+baseName+"\\*.jpg");
 sampleSize=length(jpgList);
-% yu=130; %阈值
-%if true, it will plot the granules and the image to assist revision
+% yu=130; % threshold
+% if true, it will plot the granules and the image to assist revision
 ACTIVATEPLOT=false;
 oldPath=pwd;
 cd(folder+"/"+baseName);
@@ -15,9 +15,11 @@ ratio=zeros(sampleSize,1); % ratio of ordered particles.
 center=cell(sampleSize,1);
 t=zeros(sampleSize,1);
 
-%小球直径,铝球19.54±0.30*3，铜球19.38±0.18*3, 钢球19.38±0.23*3
+% the diameter of particles, unit in mm.
+% Aluminium 19.54±0.30*3, Copper 19.38±0.18*3, Iron 19.38±0.23*3
 D=19.54;
-dD=0.046*D;%比例:铝球 0.046，钢球 0.036, 铜球0.027 有序堆积时的粒子间距
+% the interparticle distance when ordered.
+dD=0.046*D;% ratio: Aluminium 0.046, iron 0.036, copper 0.027 
 
 
 for i=1:sampleSize
@@ -25,11 +27,11 @@ for i=1:sampleSize
     A= im2bw(I,yu/255);
     [shuiping,shuzhi]=size(A);
     if ACTIVATEPLOT
-         figure,imshow(A)
-         hold on  %plot点的时候用
+         figure,imshow(A);
+         hold on  % useful in plot
     end
     
-    %取中心和半径
+    % extract the infos about the centroid and radius.
     stats = regionprops('table',A,'Centroid','MajorAxisLength','MinorAxisLength','Image','EquivDiameter');
     [center{i}]=GranuleRecognition(stats,shuiping,shuzhi);
     
@@ -39,14 +41,14 @@ for i=1:sampleSize
    if ACTIVATEPLOT
         plot(center{i}(:,1),center{i}(:,2),'cx','LineWidth',1,'MarkerSize',7)% plotting
    end
-%小球分布
+% the distribution of beads.
    R=zeros(a,1);
    for j=1:a
        R(j)=(center{i}(j,1)-shuiping/2)^2+(center{i}(j,2)-shuzhi/2)^2;
    end
    maxR=max(R);
 
-%近邻粒子
+% check the nearest neighbors.
    TRI=delaunay(center{i}(:,1),center{i}(:,2));
    [a1,b1]=size(TRI);
    n=zeros(a,1);% the number of adjacent particles.
@@ -82,10 +84,10 @@ for i=1:sampleSize
    kernelList=zeros(a,1);% the center of a hexagon
    orderStack=0;kernelStack=0;% stack position indicator
    for j=1:a
-       if rMean(j)<D+dD && n(j,1)==6 && R(j)<=(24*D)^2 %判断是否形成有序结构的条件
+       if rMean(j)<D+dD && n(j,1)==6 && R(j)<=(24*D)^2 % the determinant conditions about the ordered structure
            if ACTIVATEPLOT
-                plot(center{i}(j,1),center{i}(j,2),'b+','LineWidth',1,'MarkerSize',7)
-                hold on  %有时候觉得跑出来的结果奇怪的话就把点plot一下看看
+                plot(center{i}(j,1),center{i}(j,2),'b+','LineWidth',1,'MarkerSize',7);
+                hold on  % Plot the points when the results are strange.
            end            
             orderStack=orderStack+1;
             kernelStack=kernelStack+1;
@@ -100,7 +102,7 @@ for i=1:sampleSize
        end
    end
    orderList=unique(orderList);% another filtering step, there's a 0 left.
-   number(i)=length(orderList)-1; %统计形成有序结构的粒子数，要保存下来, need to exclude 0.
+   number(i)=length(orderList)-1; % count the number of ordered granules, necessary to save, need to exclude 0.
    if ACTIVATEPLOT
        % plotting orderList
        for k=1:number(i)
@@ -111,7 +113,7 @@ for i=1:sampleSize
        end
        hold off;
    end
-   ratio(i)=number(i)/a*100; %需要保存下来
+   ratio(i)=number(i)/a*100; % necessary to save it.
 end
 
 for i=1:sampleSize
@@ -126,9 +128,9 @@ ratio=sortedT(:,2);
 
 figure, plot(t,ratio)
 xlabel('t(s)');
-ylabel('占比（%）');
+ylabel('Ratio (%)');
 axis([0,max(t),0,100]);
-title('形成六角密堆粒子占比随时间变化图') %这个图存一下先，虽然可能有点小问题
+title('the ratio of hexagonal close packing granules versus time') % save the figure anyway, though there might be some problems.
 saveas(gcf,max_ratio+".fig");
 save(max_ratio+".mat");
 fprintf("Saved data in %s\\%f.fig, %f.mat.\n",pwd,max_ratio,max_ratio);
