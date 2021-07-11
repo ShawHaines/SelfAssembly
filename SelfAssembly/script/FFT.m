@@ -1,10 +1,11 @@
-img=imread('rod\3.27.jpg');
-yuzhi=80;
-img=im2bw(img,yuzhi/255);
-B=fft2(img);
-C=fftshift(B);
-D=abs(C);
-clims=[0,15000];
-figure,imagesc(D,clims)
-set(gca,'ytick',[])
-set(gca,'xtick',[])
+frame=imread(fileName);
+frame=rgb2gray(frame);
+imshow(frame);
+
+%% fft
+climit=[0,1];
+viewPortSize=size(frame,1)*size(frame,2);
+transformed=fftshift(fft2(frame)/viewPortSize);
+figure;
+colormap jet;
+imagesc(abs(transformed),climit);
