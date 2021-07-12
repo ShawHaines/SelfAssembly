@@ -42,16 +42,7 @@ while hasFrame(vid1)
     %imshow(frame);
     cropped=imresize(imcrop(frame,rect),[uniformSize,uniformSize]);
     % fill the outside of the plate with white.
-    % ugly grammar...
-    r=cropped(:,:,1);
-    g=cropped(:,:,2);
-    b=cropped(:,:,3);
-    r(mask)=255;
-    g(mask)=255;
-    b(mask)=255;
-    cropped(:,:,1)=r;
-    cropped(:,:,2)=g;
-    cropped(:,:,3)=b;
+    cropped=imoverlay(cropped,mask,'white');
     imwrite(cropped,i+".jpg");
     i=i+1;
 end
