@@ -1,7 +1,10 @@
+% VideoRead_Ultimate.m
+% Provides circle recognition, cropping and 
+
 %% Preparations and Definitions
 close all;
-% You can adjust it manually.
-uniformSize=1050; % somewhat legacy... Just don't touch it...
+% the sidelength of the output square video.
+uniformSize=1050; % somewhat legacy when it comes to the ordered determination. Just don't touch it...
 
 oldPath=pwd;
 cd(folder);
@@ -25,6 +28,11 @@ rect(4)=rect(3);
 rect(2)=centers(1,2)-rect(3)/2;
 rect(1)=centers(1,1)-rect(3)/2;
 
+% mask to decide where would be dyed white.
+[X,Y]=meshgrid(1:uniformSize,1:uniformSize);
+halfSize=(uniformSize+1)/2;
+mask=((X-halfSize).^2+(Y-halfSize).^2)>(uniformSize-1)^2/4;
+
 %% Output Frames
 tic;
 i=1;
@@ -33,6 +41,17 @@ while hasFrame(vid1)
     frame=imresize(frame,[1080,NaN]);
     %imshow(frame);
     cropped=imresize(imcrop(frame,rect),[uniformSize,uniformSize]);
+    % fill the outside of the plate with white.
+    % ugly grammar...
+    r=cropped(:,:,1);
+    g=cropped(:,:,2);
+    b=cropped(:,:,3);
+    r(mask)=255;
+    g(mask)=255;
+    b(mask)=255;
+    cropped(:,:,1)=r;
+    cropped(:,:,2)=g;
+    cropped(:,:,3)=b;
     imwrite(cropped,i+".jpg");
     i=i+1;
 end
