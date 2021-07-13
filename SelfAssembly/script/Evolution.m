@@ -1,3 +1,4 @@
+%% Preparation and parameter setup
 %close all
 tic
 
@@ -9,23 +10,26 @@ ACTIVATEPLOT=false;
 oldPath=pwd;
 cd(folder+"/"+baseName);
 
+% the diameter of particles, unit in mm.
+% Aluminium 19.54 +- 0.30*3, Copper 19.38 +- 0.18*3, Iron 19.38 +- 0.23*3
+D=19.54;
+% the interparticle distance when ordered.
+dD=0.046*D;% ratio: Aluminium 0.046, iron 0.036, copper 0.027 
+%% initializing
 totNum=zeros(sampleSize,1);% number of total particles.
 number=zeros(sampleSize,1);% number of ordered particles.
 ratio=zeros(sampleSize,1); % ratio of ordered particles.
 center=cell(sampleSize,1);
 t=zeros(sampleSize,1);
-
-% the diameter of particles, unit in mm.
-% Aluminium 19.54¡À0.30*3, Copper 19.38¡À0.18*3, Iron 19.38¡À0.23*3
-D=19.54;
-% the interparticle distance when ordered.
-dD=0.046*D;% ratio: Aluminium 0.046, iron 0.036, copper 0.027 
-
-
+%% main loop
 for i=1:sampleSize
     I=imread(jpgList(i).name);
-    A= im2bw(I,yu/255);
-    [shuiping,shuzhi]=size(A);
+    gray=rgb2gray(I);
+    % imhist(gray); % according to the histogram of the image, decide the
+    % threshold, filter out the peak of dark plate.
+    gray=imadjust(gray,[0.25,0.5],[]);
+    A=imbinarize(gray);
+    [imgWidth,imgHeight]=size(A);
     if ACTIVATEPLOT
          figure,imshow(A);
          hold on  % useful in plot
@@ -33,18 +37,18 @@ for i=1:sampleSize
     
     % extract the infos about the centroid and radius.
     stats = regionprops('table',A,'Centroid','MajorAxisLength','MinorAxisLength','Image','EquivDiameter');
-    [center{i}]=GranuleRecognition(stats,shuiping,shuzhi);
+    [center{i}]=GranuleRecognition(stats);
     
 
-   [a,b]=size(center{i});
+   [a,~]=size(center{i});
    totNum(i)=a;
    if ACTIVATEPLOT
-        plot(center{i}(:,1),center{i}(:,2),'cx','LineWidth',1,'MarkerSize',7)% plotting
+        plot(center{i}(:,1),center{i}(:,2),'cx','LineWidth',1,'MarkerSize',7)% plotting beads for checking.
    end
 % the distribution of beads.
    R=zeros(a,1);
    for j=1:a
-       R(j)=(center{i}(j,1)-shuiping/2)^2+(center{i}(j,2)-shuzhi/2)^2;
+       R(j)=(center{i}(j,1)-imgWidth/2)^2+(center{i}(j,2)-imgHeight/2)^2;
    end
    maxR=max(R);
 
@@ -102,7 +106,7 @@ for i=1:sampleSize
        end
    end
    orderList=unique(orderList);% another filtering step, there's a 0 left.
-   number(i)=length(orderList)-1; % count the number of ordered granules, necessary to save, need to exclude 0.
+   number(i)=length(orderList)-1; % count the number of ordered granules, necessary to save, excluding index 0.
    if ACTIVATEPLOT
        % plotting orderList
        for k=1:number(i)
@@ -115,7 +119,7 @@ for i=1:sampleSize
    end
    ratio(i)=number(i)/a*100; % necessary to save it.
 end
-
+%% output.
 for i=1:sampleSize
     base=erase(jpgList(i).name,'.jpg');
     t(i)=sscanf(base,"%f",1);

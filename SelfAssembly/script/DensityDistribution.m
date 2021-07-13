@@ -12,7 +12,7 @@ buchang=0.2;% the step length when calculating the distribution graph.
 
 % extract the centroid and radius.
 stats = regionprops('table',img,'Centroid','MajorAxisLength','MinorAxisLength','Image','EquivDiameter');
-center=GranuleRecognition(stats,imgWidth,imgHeight);
+center=GranuleRecognition(stats);
 
 % plot(center(:,1),center(:,2),'b+','LineWidth',1,'MarkerSize',7) % mark the centers of the identified beads, (for checking repeated markings.)
 [b,~]=size(center);
