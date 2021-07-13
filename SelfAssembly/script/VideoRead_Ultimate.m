@@ -14,8 +14,13 @@ cd(baseName)
 
 %% Auto Recognize Circle and Cropping
 frame=readFrame(vid1);% resize to exactly 1080 pixels high.
-frame=imresize(frame,[1080,NaN]);
-bw=imbinarize(rgb2gray(frame));
+
+gray=rgb2gray(imresize(frame,[1080,NaN]));
+% imhist(gray); % according to the histogram of the image, decide the
+% desiredRange in function, filter out the peak of dark plate.
+
+bw=imbinarize(gray);
+% automatically recognize the biggest circle.
 [centers, radii, metric] = imfindcircles(bw,[450 540],'Sensitivity',0.99,'ObjectPolarity','dark');
 figure;
 imshow(bw);
@@ -28,25 +33,52 @@ rect(4)=rect(3);
 rect(2)=centers(1,2)-rect(3)/2;
 rect(1)=centers(1,1)-rect(3)/2;
 
-% mask to decide where would be dyed white.
+% mask that decides where would be filled with white.
 [X,Y]=meshgrid(1:uniformSize,1:uniformSize);
 halfSize=(uniformSize+1)/2;
 mask=((X-halfSize).^2+(Y-halfSize).^2)>(uniformSize-1)^2/4;
+
+%%
+output=processFrame(frame,uniformSize,rect,mask);
+figure; imshow(output);
+% figure; imshow(imbinarize(cropped));
 
 %% Output Frames
 tic;
 i=1;
 while hasFrame(vid1)
     frame=readFrame(vid1);
-    frame=imresize(frame,[1080,NaN]);
-    %imshow(frame);
-    cropped=imresize(imcrop(frame,rect),[uniformSize,uniformSize]);
-    % fill the outside of the plate with white.
-    cropped=imoverlay(cropped,mask,'white');
-    imwrite(cropped,i+".jpg");
+    output=processFrame(frame,uniformSize,rect,mask);
+    imwrite(output,i+".png");
     i=i+1;
 end
 
 cd(oldPath);
 toc
 fprintf("video extracted in %s\\%s.\n",folder,baseName);
+
+%% function
+
+function output=processFrame(input,uniformSize,rect,mask)
+    % Gross parameter passing... Very stupid
+    frame=imresize(input,[1080,NaN]);
+    % image adjustment, enhance contrast.
+    gray=rgb2gray(frame);
+    desiredRange=[0.25,0.5];
+    gray=imadjust(gray,desiredRange,[]);  % the adjustment need to be done later, to ensure the success of circle detection
+    gray=imcrop(gray,rect);
+    cropped=imresize(gray,[uniformSize,uniformSize]);
+    cropped(mask)=255;
+    % nonlinear gamma correction is the KEY!
+    cropped=gammaCorrection(cropped,3.0);
+    cropped=imbinarize(cropped);
+    
+    % morphological process
+    se=strel('disk',1);
+    output=imopen(cropped,se);
+end
+
+function output=gammaCorrection(input,gamma)
+    % output an image with gamma correction.
+    output=im2double(input).^gamma;
+end
