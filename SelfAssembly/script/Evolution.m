@@ -2,19 +2,17 @@
 %close all
 tic
 
-jpgList=dir(folder+'\\'+baseName+"\\*.jpg");
+jpgList=dir(folder+"/"+baseName+"\\*.jpg");
 sampleSize=length(jpgList);
-% yu=130; % threshold
+yu=130; % threshold
 % if true, it will plot the granules and the image to assist revision
 ACTIVATEPLOT=false;
-oldPath=pwd;
-cd(folder+"/"+baseName);
 
 % the diameter of particles, unit in mm.
 % Aluminium 19.54 +- 0.30*3, Copper 19.38 +- 0.18*3, Iron 19.38 +- 0.23*3
-D=19.54;
+D=19.38;
 % the interparticle distance when ordered.
-dD=0.046*D;% ratio: Aluminium 0.046, iron 0.036, copper 0.027 
+dD=0.036*D;% ratio: Aluminium 0.046, iron 0.036, copper 0.027 
 %% initializing
 totNum=zeros(sampleSize,1);% number of total particles.
 number=zeros(sampleSize,1);% number of ordered particles.
@@ -23,12 +21,11 @@ center=cell(sampleSize,1);
 t=zeros(sampleSize,1);
 %% main loop
 for i=1:sampleSize
-    I=imread(jpgList(i).name);
+    I=imread(jpgList(i).folder+"/"+jpgList(i).name); % string concatenation.
     gray=rgb2gray(I);
     % imhist(gray); % according to the histogram of the image, decide the
     % threshold, filter out the peak of dark plate.
-    gray=imadjust(gray,[0.25,0.5],[]);
-    A=imbinarize(gray);
+    A=imbinarize(gray,yu/255);
     [imgWidth,imgHeight]=size(A);
     if ACTIVATEPLOT
          figure,imshow(A);
@@ -42,8 +39,9 @@ for i=1:sampleSize
 
    [a,~]=size(center{i});
    totNum(i)=a;
-   if ACTIVATEPLOT
-        plot(center{i}(:,1),center{i}(:,2),'cx','LineWidth',1,'MarkerSize',7)% plotting beads for checking.
+   if ACTIVATEPLOT % plotting beads for checking
+        % all the beads recognized.
+        plot(center{i}(:,1),center{i}(:,2),'cx','LineWidth',1,'MarkerSize',7)
    end
 % the distribution of beads.
    R=zeros(a,1);
@@ -90,6 +88,7 @@ for i=1:sampleSize
    for j=1:a
        if rMean(j)<D+dD && n(j,1)==6 && R(j)<=(24*D)^2 % the determinant conditions about the ordered structure
            if ACTIVATEPLOT
+                % the beads that is the center of a hexagonal kernel.
                 plot(center{i}(j,1),center{i}(j,2),'b+','LineWidth',1,'MarkerSize',7);
                 hold on  % Plot the points when the results are strange.
            end            
@@ -135,8 +134,8 @@ xlabel('t(s)');
 ylabel('Ratio (%)');
 axis([0,max(t),0,100]);
 title('the ratio of hexagonal close packing granules versus time') % save the figure anyway, though there might be some problems.
-saveas(gcf,max_ratio+".fig");
-save(max_ratio+".mat");
+% save at directory folder/baseName/
+saveas(gcf,folder+"/"+baseName+"/"+max_ratio+".fig");
+save(folder+"/"+baseName+"/"+max_ratio+".mat");
 fprintf("Saved data in %s\\%f.fig, %f.mat.\n",pwd,max_ratio,max_ratio);
-cd(oldPath);
 toc
