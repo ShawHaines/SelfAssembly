@@ -6,12 +6,8 @@ close all;
 % the sidelength of the output square video.
 uniformSize=1050; % somewhat legacy when it comes to the ordered determination. Just don't touch it...
 
-oldPath=pwd;
-cd(folder);
-vid1=VideoReader(fileName);
-mkdir(baseName)
-cd(baseName)
-
+vid1=VideoReader(folder+"/"+fileName);
+mkdir(folder+"/"+baseName);
 %% Auto Recognize Circle and Cropping
 frame=readFrame(vid1);% resize to exactly 1080 pixels high.
 
@@ -49,11 +45,10 @@ i=1;
 while hasFrame(vid1)
     frame=readFrame(vid1);
     output=processFrame(frame,uniformSize,rect,mask);
-    imwrite(output,i+".png");
+    imwrite(output,sprintf("%s/%s/%03d.png",folder,baseName,i));
     i=i+1;
 end
 
-cd(oldPath);
 toc
 fprintf("video extracted in %s\\%s.\n",folder,baseName);
 
@@ -75,7 +70,8 @@ function output=processFrame(input,uniformSize,rect,mask)
     
     % morphological process
     se=strel('disk',1);
-    output=imopen(cropped,se);
+    cropped=imopen(cropped,se);
+    output=bwareaopen(cropped,6);
 end
 
 function output=gammaCorrection(input,gamma)
