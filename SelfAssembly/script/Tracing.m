@@ -1,3 +1,6 @@
+% Tracing.m 
+% trace and distinguish the beads.
+
 %% Preparation and parameter setup
 %close all
 tic
@@ -8,10 +11,6 @@ sampleSize=length(imgList);
 ACTIVATEPLOT=true;
 % beads with distance values between 2 frames higher than this cannot be viewed as the same one.
 vicinityThreshold=40; 
-% custom map, because matlab won't allow seperate maps for image and
-% scatter...
-map=[0 0 0;1 0 0;1 1 0;0 1 0;0 0 1;1 1 1];
-map=interp1(linspace(0,1,6),map,linspace(0,1,20));
 %% main loop
 
 % initializing
@@ -24,7 +23,7 @@ if ACTIVATEPLOT
     open(writer);
 end
 for i=1:sampleSize
-    A=imread(imgList(i).folder+"/"+imgList(i).name); % string concatenation.
+    A=imread(imgList(i).folder+"/"+imgList(i).name);
     % extract the infos about the centroid and radius.
     stats = regionprops('table',A,'Centroid','Area');
     centroid=stats.Centroid(stats.Area<10000,:); % exclude the 4 big white areas on the corners.
@@ -34,7 +33,7 @@ for i=1:sampleSize
         center{i}=centroid;
         source=center{i}; % sourceCount*2 matrix.
         sourceCount=size(source,1); % the count is fixed from now on.
-        colorMapping=rand([sourceCount,1])*0.5+0.25; % colorful labels
+        colorMapping=rand([sourceCount,1]); % colorful labels
     else
         target=centroid;
         center{i}=zeros(sourceCount,2);
@@ -54,12 +53,12 @@ for i=1:sampleSize
     if ACTIVATEPLOT % plotting beads for checking
         % all the beads recognized.
         % vertically mirrored so that y=0 starts at the bottom.
-        imshow(A);
-        hold on;
-        scatter(center{i}(:,1),center{i}(:,2),5,colorMapping,'filled');
+        % imshow(A);
+        % hold on; % if turned on, interesting things would happen...
+        scatter(center{i}(:,1),sidelength*2+1-center{i}(:,2),16,colorMapping,'filled');
         viscircles([sidelength+0.5,sidelength+0.5],sidelength);
         axis equal;
-        colormap(map);
+        colormap jet;
         drawnow;
         writeVideo(writer,getframe(gcf));
     end
