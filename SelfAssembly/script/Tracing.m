@@ -6,13 +6,12 @@ imgList=dir(folder+"/"+baseName+"\\*.png");
 sampleSize=length(imgList);
 % if true, it will plot the granules and the image to assist revision
 ACTIVATEPLOT=true;
-
-% the diameter of particles, unit in mm.
-% Aluminium 19.54 +- 0.30*3, Copper 19.38 +- 0.18*3, Iron 19.38 +- 0.23*3
-D=19.38;
-% the interparticle distance when ordered.
-dD=0.036*D;% ratio: Aluminium 0.046, iron 0.036, copper 0.027 
-vicinityThreshold=30; % beads with distance values between 2 frames higher than this cannot be viewed as the same one.
+% beads with distance values between 2 frames higher than this cannot be viewed as the same one.
+vicinityThreshold=40; 
+% custom map, because matlab won't allow seperate maps for image and
+% scatter...
+map=[0 0 0;1 0 0;1 1 0;0 1 0;0 0 1;1 1 1];
+map=interp1(linspace(0,1,6),map,linspace(0,1,20));
 %% main loop
 
 % initializing
@@ -35,7 +34,7 @@ for i=1:sampleSize
         center{i}=centroid;
         source=center{i}; % sourceCount*2 matrix.
         sourceCount=size(source,1); % the count is fixed from now on.
-        colorMapping=rand([sourceCount,1]); % colorful 
+        colorMapping=rand([sourceCount,1])*0.5+0.25; % colorful labels
     else
         target=centroid;
         center{i}=zeros(sourceCount,2);
@@ -54,10 +53,13 @@ for i=1:sampleSize
     end
     if ACTIVATEPLOT % plotting beads for checking
         % all the beads recognized.
-        scatter(center{i}(:,1),center{i}(:,2),[],colorMapping,'filled');
-        colormap jet;
-        viscircles([sidelength,sidelength],sidelength);
+        % vertically mirrored so that y=0 starts at the bottom.
+        imshow(A);
+        hold on;
+        scatter(center{i}(:,1),center{i}(:,2),5,colorMapping,'filled');
+        viscircles([sidelength+0.5,sidelength+0.5],sidelength);
         axis equal;
+        colormap(map);
         drawnow;
         writeVideo(writer,getframe(gcf));
     end
