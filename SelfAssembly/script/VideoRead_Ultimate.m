@@ -45,7 +45,7 @@ i=1;
 while hasFrame(vid1)
     frame=readFrame(vid1);
     output=processFrame(frame,uniformSize,rect,mask);
-    imwrite(output,sprintf("%s/%s/%03d.png",folder,baseName,i));
+    imwrite(output,sprintf("%s/%s/%04d.png",folder,baseName,i));
     i=i+1;
 end
 

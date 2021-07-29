@@ -8,7 +8,7 @@ tic
 imgList=dir(folder+"/"+baseName+"\\*.png");
 sampleSize=length(imgList);
 % if true, it will plot the granules and the image to assist revision
-ACTIVATEPLOT=true;
+% ACTIVATEPLOT=true;
 % beads with distance values between 2 frames higher than this cannot be viewed as the same one.
 vicinityThreshold=40; 
 %% main loop
@@ -54,7 +54,7 @@ for i=1:sampleSize
         % all the beads recognized.
         % vertically mirrored so that y=0 starts at the bottom.
         % imshow(A);
-        % hold on; % if turned on, interesting things would happen...
+        % hold on; % if turned on, the particles would leave a trace, interesting, isn't it?
         scatter(center{i}(:,1),sidelength*2+1-center{i}(:,2),16,colorMapping,'filled');
         viscircles([sidelength+0.5,sidelength+0.5],sidelength);
         axis equal;
