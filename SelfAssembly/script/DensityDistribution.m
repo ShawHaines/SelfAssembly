@@ -18,7 +18,7 @@ center=GranuleRecognition(stats);
 [b,~]=size(center);
 % hold off
 
-% the radial distanaces of particles
+% the radial distances of particles
 R=zeros(b,1);
 for i=1:b
     R(i)=(center(i,1)-imgWidth/2)^2+(center(i,2)-imgHeight/2)^2;
