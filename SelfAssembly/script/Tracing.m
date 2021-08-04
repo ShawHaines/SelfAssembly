@@ -5,10 +5,10 @@
 %close all
 tic
 
-imgList=dir(folder+"/"+baseName+"\\*.png");
+imgList=dir(folder+"/"+baseName+"/*.png");
 sampleSize=length(imgList);
 % if true, it will plot the granules and the image to assist revision
-% ACTIVATEPLOT=true;
+ACTIVATEPLOT=false;
 % beads with distance values between 2 frames higher than this cannot be viewed as the same one.
 vicinityThreshold=40; 
 %% main loop
@@ -68,5 +68,8 @@ if ACTIVATEPLOT
     close(writer);
     fprintf("Saved data in %s/%s_tracing.avi.\n",folder+"/"+baseName,baseName);
 end
+savePath=sprintf("%s/%s_tracing.mat",folder+"/"+baseName,baseName);
+save(savePath);
+fprintf("Saved data in %s.\n",savePath);
 fprintf("finished.\n");
 toc

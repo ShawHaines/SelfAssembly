@@ -1,19 +1,19 @@
 % VideoRead_Ultimate.m
-% Provides circle recognition, cropping and 
-
+% Provides circle recognition, cropping and gamma correction.
 %% Preparations and Definitions
+function lastFrameIndex=VideoRead_Ultimate(videoPath,savePath,extractionMode)
+% read the video provided by videoPath, save images as pngs at savePath.
 close all;
 % the sidelength of the output square video.
 uniformSize=1050; % somewhat legacy when it comes to the ordered determination. Just don't touch it...
 
-vid1=VideoReader(folder+"/"+fileName);
-mkdir(folder+"/"+baseName);
+vid1=VideoReader(videoPath);
+if exist(savePath,'dir')~=7
+    mkdir(savePath);
+end
 %% Auto Recognize Circle and Cropping
 frame=readFrame(vid1);% resize to exactly 1080 pixels high.
-
-gray=rgb2gray(imresize(frame,[1080,NaN]));
-
-bw=imbinarize(gray);
+bw=imbinarize(rgb2gray(imresize(frame,[1080,NaN])));
 % automatically recognize the biggest circle.
 [centers, radii, metric] = imfindcircles(bw,[450 540],'Sensitivity',0.99,'ObjectPolarity','dark');
 % figure;imshow(bw);
@@ -44,12 +44,12 @@ figure; imshow(output);
 %% Output Frames
 tic;
 if exist('extractionMode','var')==1 && upper(extractionMode)==upper("continuous")
-    i=1;
+    i=0;
     while hasFrame(vid1)
+        i=i+1;
         frame=readFrame(vid1);
         output=processFrame(frame,uniformSize,rect,mask,desiredRange,3.0,true);
-        imwrite(output,sprintf("%s/%s/%04d.png",folder,baseName,i));
-        i=i+1;
+        imwrite(output,sprintf("%s/%04d.png",savePath,i));
     end
 else
     % default is only single frame.
@@ -60,19 +60,19 @@ else
     i=floor(videoTime*vid1.FrameRate);
     frame=readFrame(vid1);
     output=processFrame(frame,uniformSize,rect,mask,desiredRange,3.0,true);
-    imwrite(output,sprintf("%s/%s/%04d.png",folder,baseName,i));
+    imwrite(output,sprintf("%s/%04d.png",savePath,i));
 end
     
 toc
-fprintf("video extracted in %s\\%s.\n",folder,baseName);
-
-%% function
+fprintf("video extracted in %s.\n",savePath);
+lastFrameIndex=i;
+%% Nested function
 
 function output=processFrame(input,uniformSize,rect,mask,desiredRange,gamma,binarize)
     % Gross parameter passing... Very stupid
-    frame=imresize(input,[1080,NaN]);
+    resized=imresize(input,[1080,NaN]);
     % image adjustment, enhance contrast.
-    gray=rgb2gray(frame);
+    gray=rgb2gray(resized);
     gray=imadjust(gray,desiredRange,[]);  % the adjustment need to be done later, to ensure the success of circle detection
 %     gray=imadjust(gray);
     gray=imcrop(gray,rect);
@@ -95,4 +95,5 @@ end
 function output=gammaCorrection(input,gamma)
     % output an image with gamma correction.
     output=im2double(input).^gamma;
+end
 end
