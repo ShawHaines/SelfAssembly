@@ -1,7 +1,5 @@
 *.asv
 *.mp4
-*.jpg
-*.png
 *.avi
 *.pptx
 *.MOV
@@ -11,3 +9,6 @@
 *.pdf
 *.rar
 *.zip
+SelfAssembly/asset/order/
+SelfAssembly/asset/collapse/
+SelfAssembly/asset/gas/
