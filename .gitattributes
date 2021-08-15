@@ -1,0 +1,9 @@
+*.mlx binary merge=mlMerge
+*.mat
+*.fig
+*.mlapp
+*.mdl
+*.slx binary merge=mlMerge
+*.mdlp
+*.slxp
+*.sldd

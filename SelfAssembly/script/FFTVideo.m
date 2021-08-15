@@ -9,8 +9,8 @@ open(writer);
 tic;
 reader.CurrentTime=0;
 viewPortSize=reader.Height*reader.Width;
-climit=[0,0.1]; % colormap.
-if hasFrame(reader)
+climit=[0,0.5]; % colormap.
+while hasFrame(reader)
     frame=rgb2gray(readFrame(reader));
     transformed=fftshift(fft2(frame)/viewPortSize);
     colormap jet;

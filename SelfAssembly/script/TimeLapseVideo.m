@@ -1,7 +1,7 @@
 oldPath=pwd;
 cd(folder+'/'+baseName);
 
-FrameSize=2;
+FrameSize=20;
 light=1/FrameSize;
 % Stores the most recent 25 frames.
 A=cell(1,FrameSize);

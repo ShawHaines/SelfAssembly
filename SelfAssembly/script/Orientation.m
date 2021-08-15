@@ -2,7 +2,7 @@
 %clear all
 tic
 sampleSize=25;
-% yu=130; %ãÐÖµ
+% yu=130; % threshold
 
 oldPath=pwd;
 cd(folder+"/"+baseName);

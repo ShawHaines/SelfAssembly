@@ -1,44 +1,47 @@
+% DensityDistribution.m
+% Plot the filling ratio against the distance from the center.
+
 tic
 img=imread(folder+"\\"+baseName+"\\1.jpg");
 img=im2bw(img,yu/255);
-[shuiping,shuzhi]=size(img);
+[imgWidth,imgHeight]=size(img);
 D=19.54;
 dr=3*D;% what is this for?
-buchang=0.2;%计算分布图的时候取的步长
+buchang=0.2;% the step length when calculating the distribution graph.
 % figure,imshow(img)
 
-%取中心和半径
+% extract the centroid and radius.
 stats = regionprops('table',img,'Centroid','MajorAxisLength','MinorAxisLength','Image','EquivDiameter');
-center=GranuleRecognition(stats,shuiping,shuzhi);
+center=GranuleRecognition(stats);
 
-% plot(center(:,1),center(:,2),'b+','LineWidth',1,'MarkerSize',7)%标记出每个被识别的球的球心（用来判断有没有球被重复标记）
+% plot(center(:,1),center(:,2),'b+','LineWidth',1,'MarkerSize',7) % mark the centers of the identified beads, (for checking repeated markings.)
 [b,~]=size(center);
 % hold off
 
-%小球分布位置
+% the radial distances of particles
 R=zeros(b,1);
 for i=1:b
-    R(i)=(center(i,1)-shuiping/2)^2+(center(i,2)-shuzhi/2)^2;
+    R(i)=(center(i,1)-imgWidth/2)^2+(center(i,2)-imgHeight/2)^2;
 end
 
 
-for i=1:shuiping
-   for j=1:shuzhi
-       position(i,j)=(i-shuiping/2)^2+(j-shuzhi/2)^2;
+for i=1:imgWidth
+   for j=1:imgHeight
+       position(i,j)=(i-imgWidth/2)^2+(j-imgHeight/2)^2;
    end
 end
 
-%填充颜色
-B=drawCircles(center,D,shuiping,shuzhi);
+% filling the white color.
+B=drawCircles(center,D,imgWidth,imgHeight);
 %    imshow(B);
 
-%计算填充率
-n=zeros(ceil(24*D/buchang)+1,2);%density
+% calculating the filling ratio.
+n=zeros(ceil(24*D/buchang)+1,2);% density
 [stepSize,~]=size(n);
 
-%Improved method, runs 6 times as fast as the original one.
-for i=1:shuiping
-    for j=1:shuzhi
+% Improved method, runs 6 times as fast as the original one.
+for i=1:imgWidth
+    for j=1:imgHeight
         if B(i,j)==1
             position(i,j)=sqrt(position(i,j));
             timeMax=floor((position(i,j)+dr/2-D)/buchang)+1;
@@ -68,9 +71,9 @@ end
 figure,
 plot(n(:,1),n(:,2))
 xlabel('r/D')
-ylabel('局部填充率')
+ylabel('local filling ratio')
 axis([0,25,0,1.2])
-title('局部填充率随半径分布')
+title('local filling ratio versus radial distance')
 oldPath=pwd;
 cd(folder+"\\"+baseName);
 saveas(gcf,"Density.fig");
@@ -78,17 +81,21 @@ fprintf("Saved data in %s\\Density.fig.\n",pwd);
 cd(oldPath);
 toc
 
-function [B]=drawCircles(center,D,shuiping,shuzhi)
+%% functions
+function [B]=drawCircles(center,D,imgWidth,imgHeight)
+    % draw Circles with diameter D, centers given in each row.
+    % Outputs a binary image B, with size given as imgWidth and imgHeight.
+    % Offers boundary check 
     [b,~]=size(center);
-    B=zeros(shuiping,shuzhi);
+    B=zeros(imgWidth,imgHeight);
     for i=1:b
            for j=-D/2:D/2
                 ylim=(sqrt(D*D/4-j*j));
                 x=fix(center(i,1)+j);
-                if x<=0||x>shuiping continue;end
+                if x<=0||x>imgWidth continue;end
                 for k=-ylim:ylim
                     y=fix(center(i,2)+k);
-                    if y>0 && y<=shuzhi
+                    if y>0 && y<=imgHeight
                         B(x,y)=1;
                     end
                 end
