@@ -36,11 +36,15 @@ output=processFrame(frame,uniformSize,rect,mask,[0,1],1.0,false);
 figure; imshow(output);
 figure;imhist(output); % according to the histogram of the image, decide the
 % desiredRange in function, filter out the peak of dark plate.
-desiredRange=[0.2,0.4];
+desiredRange=[0.3,0.6];
 
 % check the binarize effect.
-output=processFrame(frame,uniformSize,rect,mask,desiredRange,3.0,true);
+output=processFrame(frame,uniformSize,rect,mask,desiredRange,3.0,false);
 figure; imshow(output);
+% figure;imhist(output);
+% adjusted=imadjust(output,[0.3,0.7],[]);
+% figure; imshow(adjusted);
+% figure; imshow(imbinarize(adjusted));
 %% Output Frames
 tic;
 if exist('extractionMode','var')==1 && upper(extractionMode)==upper("continuous")

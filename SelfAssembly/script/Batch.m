@@ -1,7 +1,7 @@
-%% Preparations
+% Preparations
 clearvars;
 close all;
-folder="I:\Self Assembly\Video Recordings\ball\aluminium\aluminium sweep_filling 55Hz 1.40";
+folder="E:/Video Recordings/ball/aluminium/aluminium sweep_filling 55Hz 1.40/0724";
 list=dir(folder+"/*.MOV");
 %% Batch Loop
 for loop=1:length(list) % this loop name is to avoid name conflicts with VideoRead etc.
@@ -15,8 +15,8 @@ for loop=1:length(list) % this loop name is to avoid name conflicts with VideoRe
 end
 fprintf("Step finished: VideoRead.\n");
 %% filling ratio
-fillingRatio=zeros(length(list),1);
-for loop=1:length(list)
-    temp=sscanf(list(loop).name,"%f");
-    fillingRatio(loop)=temp(1);
-end
+% fillingRatio=zeros(length(list),1);
+% for loop=1:length(list)
+%     temp=sscanf(list(loop).name,"%f");
+%     fillingRatio(loop)=temp(1);
+% end

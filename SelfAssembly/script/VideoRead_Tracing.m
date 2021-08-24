@@ -14,10 +14,10 @@ if exist(savePath,'dir')~=7
 end
 sampleSize=floor(vid1.Duration*vid1.FrameRate);
 % if true, it will plot the granules and the image to assist revision
-ACTIVATEPLOT=false;
+ACTIVATEPLOT=true;
 % beads with distance values between 2 frames higher than this cannot be viewed as the same one.
-vicinityThreshold=40; 
-
+vicinityThreshold=20;
+saveBase=sprintf("%s/%s_tracing",savePath,baseName);
 %% Auto Recognize Circle, Cropping and Mask
 frame=readFrame(vid1);% resize to exactly 1080 pixels high.
 bw=imbinarize(rgb2gray(imresize(frame,[1080,NaN])));
@@ -43,7 +43,7 @@ output=processFrame(frame,uniformSize,rect,mask,[0,1],1.0,false);
 figure; imshow(output);
 figure;imhist(output); % according to the histogram of the image, decide the
 % desiredRange in function, filter out the peak of dark plate.
-desiredRange=[0.2,0.4];
+desiredRange=[0.3,0.6];
 
 % check the binarize effect.
 output=processFrame(frame,uniformSize,rect,mask,desiredRange,3.0,true);
@@ -56,12 +56,12 @@ tic;
 i=0;vid1.CurrentTime=0;
 if exist('ACTIVATEPLOT','var')~=0 && ACTIVATEPLOT
     figure;
-    writer=VideoWriter(char(folder+"/"+baseName+"/"+baseName+"_tracing.avi")); % Strange that it does not seem to support string.
+    writer=VideoWriter(char(saveBase+".avi")); % Strange that it does not seem to support string.
     writer.FrameRate=25.0;
     open(writer);
 end
 while hasFrame(vid1)
-    i=i+1
+    i=i+1;
     frame=readFrame(vid1);
     output=processFrame(frame,uniformSize,rect,mask,desiredRange,3.0,true);
     stats = regionprops('table',output,'Centroid','Area');
@@ -100,10 +100,11 @@ while hasFrame(vid1)
         colormap jet;
         drawnow;
         writeVideo(writer,getframe(gcf));
+    else
+        i  % display the progress...
     end
 end
 %% Saving
-saveBase=sprintf("%s/%s_tracing",savePath,baseName);
 if ACTIVATEPLOT
     close(writer);
     fprintf("Saved data in %s.avi.\n",saveBase);
