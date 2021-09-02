@@ -1,10 +1,29 @@
 ## Self Assembly
 
-![](img/2021-08-15-11-54-48.png)
-
 Problem 14 from [IYPT 2019](https://www.iypt.org/problems/problems-for-the-32nd-iypt-2019/)
 
 See the [Reference](SelfAssembly/note/0727.md)
+
+https://user-images.githubusercontent.com/50012391/131788118-5e491b6b-7fa2-49aa-9a1d-6cff11411516.mp4
+
+Binary image time-lapse evolution
+
+https://user-images.githubusercontent.com/50012391/131788084-7b38bdb8-0143-4a7a-a1ac-0594a1e88ea4.mp4
+
+Apply `fft2` 2D Fourier transformation. It can be visualized how the long-range periodicity is established over time.
+
+https://user-images.githubusercontent.com/50012391/131788101-5daf6662-38ea-4fb9-b75b-268ae03655c3.mp4
+
+Original video, particle recognition & tracing result, and superposition mask.
+
+original
+https://user-images.githubusercontent.com/50012391/131788851-0e86ba85-388f-4558-84b3-192dd852477d.mp4
+
+After particle recognition & tracing
+https://user-images.githubusercontent.com/50012391/131789015-643344a1-b404-4893-a966-d0efef17706e.mp4
+
+superposition
+https://user-images.githubusercontent.com/50012391/131789308-4f3bf92a-7448-4c3e-bd8b-b984bcd4e083.mp4
 
 ## Polygon Vortex
 
