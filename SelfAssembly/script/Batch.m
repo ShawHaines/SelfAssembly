@@ -9,7 +9,12 @@ for loop=1:length(list) % this loop name is to avoid name conflicts with VideoRe
     temp=split(fileName,'.');
     extName=temp(end);
     baseName=erase(fileName,"."+extName);
-    VideoRead_Tracing(folder+"/"+fileName,folder+"/"+baseName+"/",baseName);
+    try
+        localOrientationOrder(folder+"/"+baseName+"/"+baseName+"_tracing.mat",folder+"/"+baseName+"/",baseName);
+    catch ME
+        close all;
+        continue;
+    end
 %     clearvars -except list folder videoTime extractionMode;% memory management
     close all;
 end

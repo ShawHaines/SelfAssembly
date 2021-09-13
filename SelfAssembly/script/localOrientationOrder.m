@@ -5,16 +5,18 @@
 function lastFrameIndex=localOrientationOrder(dataPath,savePath,baseName)
 % if true, it will plot the granules and the image to assist revision
 ACTIVATEPLOT=true;
+tic;
 saveBase=sprintf("%s/%s_localOrientationOrder",savePath,baseName);
-if exist('ACTIVATEPLOT','var')~=0 && ACTIVATEPLOT
-    figure;
-    writer=VideoWriter(char(saveBase+".avi")); % Strange that it does not seem to support string.
-    writer.FrameRate=25.0;
-    open(writer);
-end
+% if exist('ACTIVATEPLOT','var')~=0 && ACTIVATEPLOT
+%     figure;
+%     writer=VideoWriter(char(saveBase+".avi")); % Strange that it does not seem to support string.
+%     writer.FrameRate=25.0;
+%     open(writer);
+% end
 %% load data
 load(dataPath);
-sampleSize=size(center,1);
+% sampleSize=size(center,1);
+sampleSize=1;
 sourceCount=size(center{1},1);
 sidelength=1050/2;
 
@@ -36,6 +38,7 @@ for frameIndex=1:sampleSize
     psi6=arrayfun(orientationalOrder,1:size(DT.Points,1));
     psi6List(frameIndex,:)=psi6;
     if ACTIVATEPLOT
+        figure;
         hold off;
         scatter(centerArray(frameIndex,:,1),centerArray(frameIndex,:,2),16,abs(psi6),'filled');
         hold on;
@@ -46,17 +49,18 @@ for frameIndex=1:sampleSize
         bar.Label.String="|\psi_6|";
         axis ij;
         axis equal;
-        drawnow;
-        writeVideo(writer,getframe(gcf));
+        savefig(gcf,saveBase+".fig",'compact');
+%         drawnow;
+%         writeVideo(writer,getframe(gcf));
     else
         frameIndex % display the progress...
     end
 end
 %%
-if ACTIVATEPLOT
-    close(writer);
-    fprintf("Saved data in %s.avi.\n",saveBase);
-end
+% if ACTIVATEPLOT
+%     close(writer);
+%     fprintf("Saved data in %s.avi.\n",saveBase);
+% end
 lastFrameIndex=frameIndex;
 % there might be empty cells in the tail of the cell array.
 psi6List=psi6List(1:lastFrameIndex,:);
