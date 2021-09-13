@@ -91,11 +91,12 @@ while hasFrame(vid1)
     end
     if ACTIVATEPLOT % plotting beads for checking
         % all the beads recognized.
-        % vertically mirrored so that y=0 starts at the bottom.
         % imshow(output);
         % hold on; % if turned on, the particles would leave a trace, interesting, isn't it?
-        scatter(center{i}(:,1),sidelength*2+1-center{i}(:,2),16,colorMapping,'filled');
+        scatter(center{i}(:,1),center{i}(:,2),16,colorMapping,'filled');
         viscircles([sidelength+0.5,sidelength+0.5],sidelength);
+        % vertically mirrored so that y=0 starts at the bottom, 
+        axis ij;
         axis equal;
         colormap jet;
         drawnow;
