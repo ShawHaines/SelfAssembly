@@ -1,7 +1,7 @@
 % Preparations
 clearvars;
 close all;
-folder="E:/Video Recordings/ball/aluminium/aluminium sweep_filling 55Hz 1.40/0724";
+folder="E:/Video Recordings/ball/aluminium/aluminium sweep_filling 55Hz 1.40/0725";
 list=dir(folder+"/*.MOV");
 %% Batch Loop
 for loop=1:length(list) % this loop name is to avoid name conflicts with VideoRead etc.
@@ -10,7 +10,7 @@ for loop=1:length(list) % this loop name is to avoid name conflicts with VideoRe
     extName=temp(end);
     baseName=erase(fileName,"."+extName);
     try
-        localOrientationOrder(folder+"/"+baseName+"/"+baseName+"_tracing.mat",folder+"/"+baseName+"/",baseName);
+        orderParameter(folder+"/"+baseName+"/"+baseName+"_tracing.mat",folder+"/"+baseName+"/",baseName);
     catch ME
         close all;
         continue;
