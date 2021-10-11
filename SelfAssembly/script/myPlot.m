@@ -6,5 +6,5 @@ rounded=round(positions);
 for index=1:size(positions,1) % ugly grammar, can't use array index
     I(rounded(index,1),rounded(index,2))=1;
 end
-fprintf("total %d particles",size(positions,1));
+% fprintf("total %d particles",size(positions,1));
 end
