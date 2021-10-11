@@ -1,21 +1,12 @@
-% orderParameter.m
-% Based on the tracing data `.mat`, output a video or figure that visualize
-% the kernels that form a hexagonal close pack. The parameters are like the
-% ones in localOrientationOrder.m
-function lastFrameIndex=orderParameter(dataPath,savePath,baseName)
-%% Preparation and parameter setup
-% close all
-
-% the diameter of particles, unit in mm.
-% Aluminium 19.54 +- 0.30*3, Copper 19.38 +- 0.18*3, Iron 19.38 +- 0.23*3
-D=19.38;
-% the interparticle distance when ordered.
-dD=0.036*D;% ratio: Aluminium 0.046, iron 0.036, copper 0.027
-
+% localOrientationOrder.m
+% Based on the tracing data `.mat`, output a video that visualize local orientation order.
+% For more information about local orientation order, see the .mlx file and
+% the markdown file. (Basically all copied from `test.mlx`)
+function lastFrameIndex=localOrientationOrder(dataPath,savePath,baseName)
 % if true, it will plot the granules and the image to assist revision
 ACTIVATEPLOT=true;
 tic;
-saveBase=sprintf("%s/%s_orderParameter",savePath,baseName);
+saveBase=sprintf("%s/%s_localOrientationOrder",savePath,baseName);
 % if exist('ACTIVATEPLOT','var')~=0 && ACTIVATEPLOT
 %     figure;
 %     writer=VideoWriter(char(saveBase+".avi")); % Strange that it does not seem to support string.
@@ -38,28 +29,24 @@ for i=2:sampleSize
     velocity(i-1,:,:)=centerArray(i,:,:)-centerArray(i-1,:,:); % unit in pixels.
 end
 %% visualization
-% orderList=zeros([sampleSize,sourceCount]); % the center and the vicinity of a hexagon
-% kernelList=zeros([sampleSize,sourceCount]);% the center of a hexagon
-rBarList=zeros([sampleSize,sourceCount]); % the mean bond length of a vertex.
+psi6List=zeros([sampleSize,sourceCount]);
 for frameIndex=1:sampleSize
     % orientation order
     DT=delaunayTriangulation(centerArray(frameIndex,:,1)',centerArray(frameIndex,:,2)');
     % accept id as a column vector.
-    meanBondLengthFunction=@(id) mean(vecnorm(bonds(DT,id),2,2),'omitnan');
-    rBar=arrayfun(meanBondLengthFunction,1:size(DT.Points,1));
-    rBarList(frameIndex,:)=rBar;
-    
+    orientationalOrder=@(id) mean(exp(1i*6*bondsOrientation(DT,id)),'omitnan');
+    psi6=arrayfun(orientationalOrder,1:size(DT.Points,1));
+    psi6List(frameIndex,:)=psi6;
     if ACTIVATEPLOT
         figure;
         hold off;
-        scatter(centerArray(frameIndex,:,1),centerArray(frameIndex,:,2),16,abs(rBar),'filled');
+        scatter(centerArray(frameIndex,:,1),centerArray(frameIndex,:,2),16,abs(psi6),'filled');
         hold on;
         viscircles([sidelength+0.5,sidelength+0.5],sidelength);
-        caxis([20,40]);
+        caxis([0,1]);
         bar=colorbar;
         colormap jet;
-        bar.Label.Interpreter="latex";
-        bar.Label.String="$\bar{r}$";
+        bar.Label.String="|\psi_6|";
         axis ij;
         axis equal;
         savefig(gcf,saveBase+".fig",'compact');
@@ -76,9 +63,9 @@ end
 % end
 lastFrameIndex=frameIndex;
 % there might be empty cells in the tail of the cell array.
-rBarList=rBarList(1:lastFrameIndex,:);
-% save(saveBase+".mat",'rBarList');
-% fprintf("Saved data in %s.mat\n",saveBase);
+psi6List=psi6List(1:lastFrameIndex,:);
+save(saveBase+".mat",'psi6List');
+fprintf("Saved data in %s.mat\n",saveBase);
 fprintf("finished.\n");
 toc
 end

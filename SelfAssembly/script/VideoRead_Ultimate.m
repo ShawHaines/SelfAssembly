@@ -36,11 +36,15 @@ output=processFrame(frame,uniformSize,rect,mask,[0,1],1.0,false);
 figure; imshow(output);
 figure;imhist(output); % according to the histogram of the image, decide the
 % desiredRange in function, filter out the peak of dark plate.
-desiredRange=[0.1,0.2];
+desiredRange=[0.3,0.6];
 
 % check the binarize effect.
-output=processFrame(frame,uniformSize,rect,mask,desiredRange,3.0,true);
+output=processFrame(frame,uniformSize,rect,mask,desiredRange,3.0,false);
 figure; imshow(output);
+% figure;imhist(output);
+% adjusted=imadjust(output,[0.3,0.7],[]);
+% figure; imshow(adjusted);
+% figure; imshow(imbinarize(adjusted));
 %% Output Frames
 tic;
 if exist('extractionMode','var')==1 && upper(extractionMode)==upper("continuous")
@@ -66,34 +70,4 @@ end
 toc
 fprintf("video extracted in %s.\n",savePath);
 lastFrameIndex=i;
-%% Nested function
-
-function output=processFrame(input,uniformSize,rect,mask,desiredRange,gamma,binarize)
-    % Gross parameter passing... Very stupid
-    resized=imresize(input,[1080,NaN]);
-    % image adjustment, enhance contrast.
-    gray=rgb2gray(resized);
-    gray=imadjust(gray,desiredRange,[]);  % the adjustment need to be done later, to ensure the success of circle detection
-%     gray=imadjust(gray);
-    gray=imcrop(gray,rect);
-    cropped=imresize(gray,[uniformSize,uniformSize]);
-    cropped(mask)=255;
-    % nonlinear gamma correction is the KEY!
-    cropped=gammaCorrection(cropped,gamma);
-    if binarize
-        cropped=imbinarize(cropped);
-
-        % morphological process
-        se=strel('disk',1);
-        cropped=imopen(cropped,se);
-        output=bwareaopen(cropped,6);
-    else
-        output=cropped;
-    end
-end
-
-function output=gammaCorrection(input,gamma)
-    % output an image with gamma correction.
-    output=im2double(input).^gamma;
-end
 end

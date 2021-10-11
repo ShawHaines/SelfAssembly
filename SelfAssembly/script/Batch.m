@@ -1,26 +1,27 @@
-%% Preparations
+% Preparations
 clearvars;
 close all;
-folder="D:\CUPT Raw\Rod\圆形边界\粗棒 0.776 55Hz 变Gamma 没关灯";
-yu=130;
-oldPath=pwd;
-cd(folder);
-list=dir('*.MOV');
-
+folder="E:/Video Recordings/ball/aluminium/aluminium sweep_filling 55Hz 1.40/0725";
+list=dir(folder+"/*.MOV");
 %% Batch Loop
-cd(oldPath);
 for loop=1:length(list) % this loop name is to avoid name conflicts with VideoRead etc.
     fileName=list(loop).name;
     temp=split(fileName,'.');
-    extName=temp(length(temp));
+    extName=temp(end);
     baseName=erase(fileName,"."+extName);
-    if ~exist(folder+"\"+baseName)
-        VideoRead_Ultimate;
-        BW_TimeLapse;
+    try
+        orderParameter(folder+"/"+baseName+"/"+baseName+"_tracing.mat",folder+"/"+baseName+"/",baseName);
+    catch ME
+        close all;
+        continue;
     end
-%     TimeCorrelation_Ratio_Enhanced;
-%     DensityDistribution;
-    clearvars -except list loop yu folder;% memory management
+%     clearvars -except list folder videoTime extractionMode;% memory management
     close all;
 end
-fprintf("Work done.\n");
+fprintf("Step finished: VideoRead.\n");
+%% filling ratio
+% fillingRatio=zeros(length(list),1);
+% for loop=1:length(list)
+%     temp=sscanf(list(loop).name,"%f");
+%     fillingRatio(loop)=temp(1);
+% end

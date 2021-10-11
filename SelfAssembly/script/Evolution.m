@@ -50,7 +50,7 @@ for i=1:sampleSize
    end
    maxR=max(R);
 
-% check the nearest neighbors.
+% return the list of nearest neighbors for each particle.
    TRI=delaunay(center{i}(:,1),center{i}(:,2));
    [a1,b1]=size(TRI);
    n=zeros(a,1);% the number of adjacent particles.
@@ -86,7 +86,11 @@ for i=1:sampleSize
    kernelList=zeros(a,1);% the center of a hexagon
    orderStack=0;kernelStack=0;% stack position indicator
    for j=1:a
-       if rMean(j)<D+dD && n(j,1)==6 && R(j)<=(24*D)^2 % the determinant conditions about the ordered structure
+       if rMean(j)<D+dD && n(j,1)==6 && R(j)<=(24*D)^2 % the determinant conditions about the ordered structure:
+           % 1. average distance of nearest neighbours are within certain
+           % range.
+           % 2. the number of nearest neighbours is 6.
+           % 3. the distance from center is not too large.
            if ACTIVATEPLOT
                 % the beads that is the center of a hexagonal kernel.
                 plot(center{i}(j,1),center{i}(j,2),'b+','LineWidth',1,'MarkerSize',7);
