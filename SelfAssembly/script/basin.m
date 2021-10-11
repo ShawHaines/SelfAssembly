@@ -10,12 +10,7 @@ colormap('jet');
 map=colormap;
 colorRange=[0,1];
 figure;
-for e=1:length(edgeWeight)
-    color=myColorProjection(edgeWeight(e),map,colorRange);
-    ends=DT.Points(edgeList(e,:),:);
-    plot(ends(:,1),ends(:,2),'Color',color);
-    hold on;
-end
+edgePlot(DT.Points,edgeList,edgeWeight,map,colorRange);
 axis equal;
 caxis(colorRange);
 colorbar;
@@ -26,12 +21,7 @@ edgeList=edgeList(edgeWeight<allowance,:);
 edgeWeight=edgeWeight(edgeWeight<allowance);
 
 figure;
-for e=1:length(edgeWeight)
-    color=myColorProjection(edgeWeight(e),map,colorRange);
-    ends=DT.Points(edgeList(e,:),:);
-    plot(ends(:,1),ends(:,2),'Color',color);
-    hold on;
-end
+edgePlot(DT.Points,edgeList,edgeWeight,map,colorRange);
 axis equal;
 caxis(colorRange);
 colorbar;
