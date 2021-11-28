@@ -1,6 +1,6 @@
 ## Self Assembly
 
-Problem 14 from [IYPT 2019](https://www.iypt.org/problems/problems-for-the-32nd-iypt-2019/)
+Problem 11 from [IYPT 2019](https://www.iypt.org/problems/problems-for-the-32nd-iypt-2019/)
 
 See the [Reference](SelfAssembly/note/0727.md)
 
